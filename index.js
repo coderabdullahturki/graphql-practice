@@ -5,7 +5,7 @@ const { graphql } = require('@octokit/graphql');
 const { request, gql } = require('graphql-request');
 
 // Replace with your Shopify store's endpoint and storefront access token
-const shopifyEndpoint = 'https:\/\/abostad.myshopify.com\/api\/2023-11\/graphql.json';
+const shopifyEndpoint = 'https://abostad.myshopify.com/api/2023-11/graphql.json';
 const storefrontAccessToken = '670caf544b77d38eedae8180f2ca1a7c';
 
 const query = gql`
