@@ -2,29 +2,39 @@ const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
 const { graphql } = require('@octokit/graphql');
+const { request, gql } = require('graphql-request');
 
-// Define your GraphQL schema
-const schema = buildSchema(`
-  type Query {
-    hello: String
+// Replace with your Shopify store's endpoint and storefront access token
+const shopifyEndpoint = 'https:\/\/abostad.myshopify.com\/api\/2023-11\/graphql.json';
+const storefrontAccessToken = '670caf544b77d38eedae8180f2ca1a7c';
+
+const query = gql`
+  {
+    shop {
+      name
+      primaryDomain {
+        url
+      }
+      description
+      currencyCode
+    }
   }
-`);
+`;
 
-// Define your resolvers
-const root = {
-  hello: () => 'Hello, GraphQL World!',
+// Set up the GraphQL request headers
+const headers = {
+  'X-Shopify-Storefront-Access-Token': storefrontAccessToken,
 };
 
-const app = express();
-
-// Use the express-graphql middleware
-app.use('/graphql', graphqlHTTP({
-  schema: schema,
-  rootValue: root,
-  graphiql: true, // Enable the GraphiQL interface for easy testing
-}));
-
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}/graphql`);
-});
+request(shopifyEndpoint, query, null, headers)
+  .then(data => {
+    const shop = data.shop;
+    console.log('Shop Information:');
+    console.log(`Name: ${shop.name}`);
+    console.log(`Domain: ${shop.primaryDomain.url}`);
+    console.log(`Description: ${shop.description}`);
+    console.log(`Currency Code: ${shop.currencyCode}`);
+  })
+  .catch(error => {
+    console.error('Error fetching data:', error.message || error);
+  });
